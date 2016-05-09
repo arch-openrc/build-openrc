@@ -1,0 +1,40 @@
+# Repo packages
+arches=(sysvinit
+	openrc
+	netifrc
+	polkit-consolekit
+	consolekit
+	eudev
+	eudev-systemdcompat
+	networkmanager-consolekit
+	sddm-consolekit
+	light-locker-consolekit
+	elogind
+	lib32-eudev)
+any=(openrc-base
+	openrc-desktop
+	openrc-devel
+	openrc-misc
+	openrc-net
+	openrc-video
+	openrc-repo
+	cronjobs
+	modemmanager-pk-rules
+	bumblebee-openrc
+	freefall-openrc
+	udev-openrc)
+# AUR packages
+extras=(mate-session-manager-upower
+	mate-power-manager-upower
+	lxdm-consolekit)
+extras_any=(desktop-privileges
+    motion-openrc
+    modemmanager-openrc
+    gogs-openrc
+    docker-openrc-git
+    dictd-openrc
+    auditd-openrc
+    apparmor-openrc)
+ignore=()
+#extras=()
+#extras_any=()

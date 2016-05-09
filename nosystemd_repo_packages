@@ -1,0 +1,23 @@
+# Repo packages
+arches=(avahi-nosystemd
+	cups-nosystemd
+	dbus-nosystemd
+	gvfs-nosystemd
+	libpulse-nosystemd
+	logrotate-nosystemd
+	mdm-nosystemd
+	mesa-nosystemd
+	procps-ng-nosystemd
+	syslog-ng-nosystemd
+	udisks2-nosystemd
+	util-linux-nosystemd
+	xdg-user-dirs-nosystemd
+	xorg-server-nosystemd)
+any=(nosystemd-repo
+	mkinitcpio-nosystemd)
+# AUR packages
+extras=()
+extras_any=()
+ignore=()
+#extras=()
+#extras_any=()
