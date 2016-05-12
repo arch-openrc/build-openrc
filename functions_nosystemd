@@ -37,7 +37,7 @@ check_package() {
     fi
 }
 
-. repo_packages  # to get the value of ${ignore[@]}
+. nosystemd_repo_packages  # to get the value of ${ignore[@]}
 check_ignore() {
     local pkg=$1
     local flag=1

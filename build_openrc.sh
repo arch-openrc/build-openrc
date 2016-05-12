@@ -3,7 +3,7 @@
 
 # Source repo packages and functions
 [ -e openrc_repo_packages ] && . openrc_repo_packages
-. functions || exit 1
+. functions_openrc || exit 1
 
 # Set the user
 if [ "$(sed -n '/nous/ p' <<< "$USER")" ]; then
@@ -31,12 +31,12 @@ else
 	REPODIR_REMOTE=$HOME/$REPO_REMOTE
 fi
 if [[ $sfname = agisci ]]; then
-	AURDOWNLOAD="cower -d"
+	AURDOWNLOAD="cower -d --ignorerepo=arch-openrc"
 else
 	AURDOWNLOAD="yaourt -G"
 fi
 MAKEPACKAGES="true"
-MAKEPKGOPTS=(--noconfirm --skipinteg --skippgpcheck -scf)
+MAKEPKGOPTS=(--noconfirm --skipinteg --skippgpcheck -scfr)
 LINE="=================================================================== "
 SFREPO="frs.sourceforge.net:/home/frs/project/archopenrc/arch-openrc/"
 GHREPO="https://github.com/cromerc/packages-openrc"

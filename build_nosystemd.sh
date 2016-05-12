@@ -3,7 +3,7 @@
 
 # Source repo packages and functions
 [ -e nosystemd_repo_packages ] && . nosystemd_repo_packages
-. functions || exit 1
+. functions_nosystemd || exit 1
 
 # Set the user
 if [ "$(sed -n '/nous/ p' <<< "$USER")" ]; then
@@ -31,7 +31,7 @@ else
 	REPODIR_REMOTE=$HOME/$REPO_REMOTE
 fi
 if [[ $sfname = agisci ]]; then
-	AURDOWNLOAD="cower -d"
+	AURDOWNLOAD="cower -d --ignorerepo=arch-nosystemd"
 else
 	AURDOWNLOAD="yaourt -G"
 fi

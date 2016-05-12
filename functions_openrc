@@ -1,0 +1,72 @@
+# Functions
+
+check_package() {
+# check_package $repodir $package $pkgver $pkgrel $arch
+# returns 0 if package found, else returns 1
+    local repodir=$1
+    local pkgnam=$2
+    local pkgver=$3
+    local pkgrel=$4
+    local arch=$5
+    local service=$6
+    local oldpkg oldpkgrel oldpkgver
+# Given arguments specify new package downloaded from git
+# We check it against old package downloaded via rsync
+    pkg=$(find "$repodir/$arch/" -maxdepth 1 -type f -name "$pkgnam-[0-9]*.pkg.tar.xz" -printf "%P\n" | sort -r | head -n 1)
+    if [ "$pkg" ]; then
+        oldpkg=$(basename "$pkg")
+    else
+        echo "$pkgnam not found in $repodir/$arch"
+        return 1 # pkg not found
+    fi
+    oldpkgrel=$(echo "$oldpkg" | rev | cut -f 2 -d "-" | rev)
+    oldpkgver=$(echo "$oldpkg" | rev | cut -f 3 -d "-" | rev)
+    if [[ -n $service ]]; then
+		echo "$oldpkgver cromer"
+        if [[ $pkgver -le $oldpkgver ]]; then
+            echo "Package $pkgnam newer or equal in version (${oldpkgver}, ${pkgver}), not building."
+            return 0
+        fi
+    fi
+    if [[ $pkgver = "$oldpkgver" ]] && [[ $pkgrel = "$oldpkgrel" ]]; then
+        echo "$pkgnam $pkgver-$pkgrel unchanged for $arch, not building."
+        return 0
+    else
+        echo "$pkgnam changed ($oldpkgver-$oldpkgrel -> $pkgver-$pkgrel) for $arch"
+        return 1
+    fi
+}
+
+. openrc_repo_packages  # to get the value of ${ignore[@]}
+check_ignore() {
+    local pkg=$1
+    local flag=1
+    for i in "${ignore[@]}"; do
+        if [[ $pkg = "$i" ]]; then
+                flag=0
+        fi
+    done
+    return "$flag"
+}
+
+vercmp() {
+# needs more testing; it might bork on weird versioning patterns
+    local names=();
+    local pkgnames=();
+    local packages=();
+    local files=();
+    local newest=();
+
+    for file in $@; do
+        pkgnames+=( $(echo $file | sed 's/\(\.*\)-[0-9].*/\1/') )	#' strip version numbers
+    done
+    packages=( $(for package in ${pkgnames[@]}; do echo $package ; done | sort -du) )
+    for pkgname in ${packages[@]}; do
+        files+=($pkgname-[0-9]*)
+        newest+=(${files[@]:(-1)})
+        unset files
+    done
+    unset packages
+    packages=( $(for package in ${newest[@]}; do echo $package ; done | sort -du) )
+    echo ${packages[@]}
+}
