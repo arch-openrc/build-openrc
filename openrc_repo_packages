@@ -7,6 +7,7 @@ arches=(sysvinit
 	eudev
 	eudev-systemdcompat
 	networkmanager-consolekit
+	networkmanager-consolekit-noscan
 	sddm-consolekit
 	light-locker-consolekit
 	elogind
@@ -25,16 +26,16 @@ any=(openrc-base
 	udev-openrc)
 # AUR packages
 extras=(mate-session-manager-upower
-	mate-power-manager-upower
+	#mate-power-manager-upower
 	lxdm-consolekit)
-extras_any=(desktop-privileges
-    motion-openrc
+extras_any=(motion-openrc
+	#desktop-privileges    
     modemmanager-openrc
-    gogs-openrc
-    docker-openrc-git
+    #gogs-openrc
+    #docker-openrc-git
     dictd-openrc
-    auditd-openrc
-    apparmor-openrc)
+	#apparmor-openrc
+    auditd-openrc)
 ignore=()
 #extras=()
 #extras_any=()

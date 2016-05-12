@@ -1,0 +1,7 @@
+*~
+arch-nosystemd-sf/
+arch-openrc-sf/
+arch-openrc/
+packages-nosystemd/
+packages-openrc/
+
