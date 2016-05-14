@@ -15,7 +15,11 @@ else
 fi
 
 # Set the variables
-TARGETS=('x86_64' 'i686')
+if [ -d /lib64 ]; then
+	TARGETS=('x86_64')
+else
+	TARGETS=('i686')
+fi
 BASEDIR=$PWD
 BUILDDIR=$BASEDIR/packages-openrc
 LOGDIR=/tmp/openrc-autobuild-$(date +%F_%T)
@@ -36,7 +40,7 @@ else
 	AURDOWNLOAD="yaourt -G"
 fi
 MAKEPACKAGES="true"
-MAKEPKGOPTS=(--noconfirm --skipinteg --skippgpcheck -scfr)
+MAKEPKGOPTS=(--noconfirm --skipinteg --skippgpcheck -scf)
 LINE="=================================================================== "
 SFREPO="frs.sourceforge.net:/home/frs/project/archopenrc/arch-openrc/"
 GHREPO="https://github.com/cromerc/packages-openrc"
@@ -47,8 +51,6 @@ if [[ $@ = *upload* ]]; then
 	MAKEPACKAGES="false"
 	UPLOADFILES="yes"
 fi
-[[ $@ = *i686* ]] && TARGETS=('i686')
-[[ $@ = *x86_64* ]] && TARGETS=('x86_64')
 
 unalias cp mv rm 2>/dev/null
 	mkdir -p "$LOGDIR"
@@ -82,6 +84,9 @@ if [[ $MAKEPACKAGES = "true" ]]; then
 		exit 1
 	fi
 
+	#Remove orphans to prevent contamination of other packages
+	sudo pacman --noconfirm -Rns $(pacman -Qtdq)
+
 	rm -f $REPODIR/*/*pkg.tar.xz
 	rm -f $REPODIR/*/*pkg.tar.xz.sig
 
@@ -114,8 +119,8 @@ if [[ $MAKEPACKAGES = "true" ]]; then
 			fi
 		    echo "Building $package for $cpu"
 		    if [[ $cpu = i686 ]]; then
-		        [[ $package = lib32-eudev ]] && continue
-		        linux32 makepkg --sign "${MAKEPKGOPTS[@]}" --config=/etc/makepkg.conf."$cpu" 1>"$LOGFILE-$package-$cpu"-build 2>"$LOGFILE-$package-$cpu"-errors || log "Error building $package; see $LOGFILE-$package-$cpu-errors for details"
+		        [[ $package = lib32-* ]] && continue
+		        makepkg --sign "${MAKEPKGOPTS[@]}" --config=/etc/makepkg.conf."$cpu" 1>"$LOGFILE-$package-$cpu"-build 2>"$LOGFILE-$package-$cpu"-errors || log "Error building $package; see $LOGFILE-$package-$cpu-errors for details"
 		    else
 		        makepkg --sign "${MAKEPKGOPTS[@]}" --config=/etc/makepkg.conf."$cpu" 1>"$LOGFILE-$package-$cpu"-build 2>"$LOGFILE-$package-$cpu"-errors || log "Error building $package; see $LOGFILE-$package-$cpu-errors for details"
 		    fi
@@ -126,6 +131,8 @@ if [[ $MAKEPACKAGES = "true" ]]; then
 				log "Error signing $package; see $LOGFILE-$package-$cpu-errors for details"
 			fi
 		done
+		#Remove orphans to prevent contamination of other packages
+		sudo pacman --noconfirm -Rns $(pacman -Qtdq)
 		rm -fr package
 	done
 
@@ -155,6 +162,8 @@ if [[ $MAKEPACKAGES = "true" ]]; then
 		mv -vf ./*-"$cpu".pkg.tar.xz "$REPODIR/x86_64/"
 		mv -vf ./*-"$cpu".pkg.tar.xz.sig "$REPODIR/x86_64/"
 
+		#Remove orphans to prevent contamination of other packages
+		sudo pacman --noconfirm -Rns $(pacman -Qtdq)
 	done
 
 	log "$LINE"
@@ -182,7 +191,7 @@ if [[ $UPLOADFILES = "yes" ]]; then
 		cd "$REPODIR_REMOTE/$repo"
 		# remove old versions
 		echo "Trimming $REPODIR_REMOTE/$repo of old packages..."
-		paccache -rv -k1 -c .
+		paccache -rv -k3 -c .
 		log "Uploading to $SFREPO/$repo"
 		rsync -auvLPH --delete-after --exclude "*.iso" "$REPODIR_REMOTE/$repo" "${sfname}"@"${SFREPO}"/
 	done

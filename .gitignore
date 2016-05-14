@@ -1,5 +1,6 @@
 *~
 arch-nosystemd-sf/
+arch-nosystemd/
 arch-openrc-sf/
 arch-openrc/
 packages-nosystemd/

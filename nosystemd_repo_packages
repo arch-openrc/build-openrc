@@ -6,7 +6,7 @@ arches=(avahi-nosystemd
 	libpulse-nosystemd
 	logrotate-nosystemd
 	mdm-nosystemd
-	#mesa-nosystemd
+	mesa-nosystemd
 	procps-ng-nosystemd
 	syslog-ng-nosystemd
 	udisks2-nosystemd
