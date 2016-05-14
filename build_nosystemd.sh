@@ -189,7 +189,7 @@ if [[ $UPLOADFILES = "yes" ]]; then
 		cd "$REPODIR_REMOTE/$repo"
 		# remove old versions
 		echo "Trimming $REPODIR_REMOTE/$repo of old packages..."
-		paccache -rv -k3 -c .
+		paccache -rv -k1 -c .
 		log "Uploading to $SFREPO/$repo"
 		rsync -auvLPH --delete-after --exclude "*.iso" "$REPODIR_REMOTE/$repo" "${sfname}"@"${SFREPO}"/
 	done
