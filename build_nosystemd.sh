@@ -92,7 +92,7 @@ if [[ $MAKEPACKAGES = "true" ]]; then
 
 	echo "Fetching remote repo from sourceforge for $sfname"
 	echo "Saving to $REPODIR_REMOTE"
-	#rsync -auvPH --delete-after --exclude "*.iso" "${sfname}"@"${SFREPO}" "$REPODIR_REMOTE" || exit 1
+	rsync -auvPH --delete-after --exclude "*.iso" "${sfname}"@"${SFREPO}" "$REPODIR_REMOTE" || exit 1
 
 	echo "Downloading AUR packages"
 	for package in "${extras[@]}" "${extras_any[@]}"; do

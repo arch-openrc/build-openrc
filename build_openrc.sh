@@ -157,10 +157,12 @@ if [[ $MAKEPACKAGES = "true" ]]; then
 		echo "Building $package for any"
 		cpu=any
 		makepkg --sign "${MAKEPKGOPTS[@]}" 1>"$LOGFILE-$package-$cpu-build" 2>"$LOGFILE-$package-$cpu-errors" || log "Error building $package; see $LOGFILE-$package-$cpu-errors for details"
-		cp -vf ./*-"$cpu".pkg.tar.xz "$REPODIR/i686/"
-		cp -vf ./*-"$cpu".pkg.tar.xz.sig "$REPODIR/i686/"
-		mv -vf ./*-"$cpu".pkg.tar.xz "$REPODIR/x86_64/"
-		mv -vf ./*-"$cpu".pkg.tar.xz.sig "$REPODIR/x86_64/"
+		for cpu2 in "${TARGETS[@]}"; do
+			cp -vf ./*-"$cpu".pkg.tar.xz "$REPODIR/$cpu2/"
+			cp -vf ./*-"$cpu".pkg.tar.xz.sig "$REPODIR/$cpu2/"
+		done
+		rm -vf ./*-"$cpu".pkg.tar.xz
+		rm -vf ./*-"$cpu".pkg.tar.xz.sig
 
 		#Remove orphans to prevent contamination of other packages
 		sudo pacman --noconfirm -Rns $(pacman -Qtdq)
