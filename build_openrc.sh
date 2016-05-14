@@ -140,7 +140,9 @@ if [[ $MAKEPACKAGES = "true" ]]; then
 		echo "Sourcing PKGBUILD"
 		. PKGBUILD
 		# Special check for service packages
-		if [[ $package = openrc-* ]]; then
+		if [[ $package = openrc-* &&  $package != openrc-repo ]]; then
+		    check_package "$REPODIR_REMOTE" "$pkgname" "$pkgver" "$pkgrel" "$TARGETS" "service" && continue # package already present
+		elif [[ $package = cronjobs || $package = auditd-openrc || $package = modemmanager-pk-rules ]]; then
 		    check_package "$REPODIR_REMOTE" "$pkgname" "$pkgver" "$pkgrel" "$TARGETS" "service" && continue # package already present
 		else
 		    check_package "$REPODIR_REMOTE" "$pkgname" "$pkgver" "$pkgrel" "$TARGETS" && continue # package already present
@@ -148,14 +150,10 @@ if [[ $MAKEPACKAGES = "true" ]]; then
 		echo "Building $package for any"
 		cpu=any
 		makepkg --sign "${MAKEPKGOPTS[@]}" 1>"$LOGFILE-$package-$cpu-build" 2>"$LOGFILE-$package-$cpu-errors" || log "Error building $package; see $LOGFILE-$package-$cpu-errors for details"
-		if [ -f ./*-"$cpu".pkg.tar.xz.sig ]; then
-			cp -vf ./*-"$cpu".pkg.tar.xz "$REPODIR/i686/"
-			cp -vf ./*-"$cpu".pkg.tar.xz.sig "$REPODIR/i686/"
-			mv -vf ./*-"$cpu".pkg.tar.xz "$REPODIR/x86_64/"
-			mv -vf ./*-"$cpu".pkg.tar.xz.sig "$REPODIR/x86_64/"
-		else
-			log "Error signing $package; see $LOGFILE-$package-$cpu-errors for details"
-		fi
+		cp -vf ./*-"$cpu".pkg.tar.xz "$REPODIR/i686/"
+		cp -vf ./*-"$cpu".pkg.tar.xz.sig "$REPODIR/i686/"
+		mv -vf ./*-"$cpu".pkg.tar.xz "$REPODIR/x86_64/"
+		mv -vf ./*-"$cpu".pkg.tar.xz.sig "$REPODIR/x86_64/"
 
 	done
 
@@ -175,8 +173,8 @@ if [[ $UPLOADFILES = "yes" ]]; then
 		do
 			nice -n 20 repo-add --sign "$REPODIR_REMOTE/$repo/$REPO.db.tar.gz" $file
 		done
-		cp -vf "$REPODIR/$repo"/*.pkg.tar.xz "$REPODIR_REMOTE/$repo/" || flag=1  # repo state unchanged, nothing to do
-		cp -vf "$REPODIR/$repo"/*.pkg.tar.xz.sig "$REPODIR_REMOTE/$repo/" || flag=1  # repo state unchanged, nothing to do
+		mv -vf "$REPODIR/$repo"/*.pkg.tar.xz "$REPODIR_REMOTE/$repo/" || flag=1  # repo state unchanged, nothing to do
+		mv -vf "$REPODIR/$repo"/*.pkg.tar.xz.sig "$REPODIR_REMOTE/$repo/" || flag=1  # repo state unchanged, nothing to do
 		if [[ $flag -eq 1 ]]; then
 		    echo "Nothing to do"
 		    continue
@@ -184,7 +182,7 @@ if [[ $UPLOADFILES = "yes" ]]; then
 		cd "$REPODIR_REMOTE/$repo"
 		# remove old versions
 		echo "Trimming $REPODIR_REMOTE/$repo of old packages..."
-		paccache -rv -k3 -c .
+		paccache -rv -k1 -c .
 		log "Uploading to $SFREPO/$repo"
 		rsync -auvLPH --delete-after --exclude "*.iso" "$REPODIR_REMOTE/$repo" "${sfname}"@"${SFREPO}"/
 	done

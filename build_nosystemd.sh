@@ -147,14 +147,10 @@ if [[ $MAKEPACKAGES = "true" ]]; then
 		echo "Building $package for any"
 		cpu=any
 		makepkg --sign "${MAKEPKGOPTS[@]}" 1>"$LOGFILE-$package-$cpu-build" 2>"$LOGFILE-$package-$cpu-errors" || log "Error building $package; see $LOGFILE-$package-$cpu-errors for details"
-		if [ -f ./*-"$cpu".pkg.tar.xz.sig ]; then
-			cp -vf ./*-"$cpu".pkg.tar.xz "$REPODIR/i686/"
-			cp -vf ./*-"$cpu".pkg.tar.xz.sig "$REPODIR/i686/"
-			mv -vf ./*-"$cpu".pkg.tar.xz "$REPODIR/x86_64/"
-			mv -vf ./*-"$cpu".pkg.tar.xz.sig "$REPODIR/x86_64/"
-		else
-			log "Error signing $package; see $LOGFILE-$package-$cpu-errors for details"
-		fi
+		cp -vf ./*-"$cpu".pkg.tar.xz "$REPODIR/i686/"
+		cp -vf ./*-"$cpu".pkg.tar.xz.sig "$REPODIR/i686/"
+		mv -vf ./*-"$cpu".pkg.tar.xz "$REPODIR/x86_64/"
+		mv -vf ./*-"$cpu".pkg.tar.xz.sig "$REPODIR/x86_64/"
 
 	done
 
@@ -183,7 +179,7 @@ if [[ $UPLOADFILES = "yes" ]]; then
 		cd "$REPODIR_REMOTE/$repo"
 		# remove old versions
 		echo "Trimming $REPODIR_REMOTE/$repo of old packages..."
-		paccache -rv -k3 -c .
+		paccache -rv -k1 -c .
 		log "Uploading to $SFREPO/$repo"
 		rsync -auvLPH --delete-after --exclude "*.iso" "$REPODIR_REMOTE/$repo" "${sfname}"@"${SFREPO}"/
 	done

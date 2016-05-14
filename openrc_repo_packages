@@ -25,7 +25,8 @@ any=(openrc-base
 	freefall-openrc
 	udev-openrc)
 # AUR packages
-extras=(mate-session-manager-upower
+extras=(
+	#mate-session-manager-upower
 	#mate-power-manager-upower
 	lxdm-consolekit)
 extras_any=(motion-openrc
