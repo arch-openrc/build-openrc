@@ -11,6 +11,7 @@ arches=(sysvinit
 	sddm-consolekit
 	light-locker-consolekit
 	elogind
+	bumblebee-openrc
 	lib32-eudev)
 any=(openrc-base
 	openrc-desktop
@@ -21,7 +22,6 @@ any=(openrc-base
 	openrc-repo
 	cronjobs
 	modemmanager-pk-rules
-	bumblebee-openrc
 	freefall-openrc
 	udev-openrc)
 # AUR packages
