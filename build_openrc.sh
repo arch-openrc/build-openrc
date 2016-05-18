@@ -1,6 +1,17 @@
 #!/bin/bash
 # build_openrc.sh
 
+if [ -f ./pgpsign.sig ]; then
+	rm ./pgpsign.sig
+fi
+touch ./pgpsign
+gpg -b ./pgpsign
+if [ ! -d /tmp/sources ]; then
+	mkdir /tmp/sources
+else
+	rm /tmp/sources/*
+fi
+
 # Source repo packages and functions
 [ -e openrc_repo_packages ] && . openrc_repo_packages
 . functions_openrc || exit 1
@@ -15,11 +26,7 @@ else
 fi
 
 # Set the variables
-if [ -d /lib64 ]; then
-	TARGETS=('x86_64')
-else
-	TARGETS=('i686')
-fi
+TARGETS=('x86_64' 'i686')
 BASEDIR=$PWD
 BUILDDIR=$BASEDIR/packages-openrc
 LOGDIR=/tmp/openrc-autobuild-$(date +%F_%T)
@@ -39,14 +46,18 @@ if [[ $sfname = agisci ]]; then
 else
 	AURDOWNLOAD="yaourt -G"
 fi
+USEAUR="false"
 MAKEPACKAGES="true"
-MAKEPKGOPTS=(--noconfirm --skipinteg --skippgpcheck -scf)
+MAKEPKGOPTS=(-c)
 LINE="=================================================================== "
 SFREPO="frs.sourceforge.net:/home/frs/project/archopenrc/arch-openrc/"
 GHREPO="https://github.com/cromerc/packages-openrc"
 PATCHDIR="$PWD/openrc_patches"
 
 # Parse commandline args
+[[ $@ = *i686* ]] && TARGETS=('i686')
+[[ $@ = *x86_64* ]] && TARGETS=('x86_64')
+[[ $@ = *aur* ]] && USEAUR="true"
 if [[ $@ = *upload* ]]; then
 	MAKEPACKAGES="false"
 	UPLOADFILES="yes"
@@ -61,6 +72,23 @@ log() {
 }
 
 if [[ $MAKEPACKAGES = "true" ]]; then
+	CHROOTOP="no"
+	read -p "Do you want to update the chroots? (yes/no): " CHROOTOP
+	if [ "$CHROOTOP" = "yes" ]; then
+		arch-nspawn /chroots/32/root pacman -Syu
+		arch-nspawn /chroots/64/root pacman -Syu
+	fi
+	read -p "Do you want to remove orphans from the chroots? (yes/no): " CHROOTOP
+	if [ "$CHROOTOP" = "yes" ]; then
+		arch-nspawn /chroots/32/root pacman -Rns $(pacman -Qtdq)
+		arch-nspawn /chroots/64/root pacman -Rns $(pacman -Qtdq)
+	fi
+	read -p "Do you want to remove old cached packages from the chroots? (yes/no): " CHROOTOP
+	if [ "$CHROOTOP" = "yes" ]; then
+		arch-nspawn /chroots/32/root pacman -Sc
+		arch-nspawn /chroots/64/root pacman -Sc
+	fi
+
 	# Building process starts
 	mkdir -p $REPODIR/{i686,x86_64}
 
@@ -83,9 +111,6 @@ if [[ $MAKEPACKAGES = "true" ]]; then
 		log "Can't find sources. Aborting"
 		exit 1
 	fi
-
-	#Remove orphans to prevent contamination of other packages
-	sudo pacman --noconfirm -Rns $(pacman -Qtdq)
 
 	rm -f $REPODIR/*/*pkg.tar.xz
 	rm -f $REPODIR/*/*pkg.tar.xz.sig
@@ -112,6 +137,7 @@ if [[ $MAKEPACKAGES = "true" ]]; then
 		echo "Sourcing PKGBUILD"
 		. PKGBUILD
 		for cpu in "${TARGETS[@]}"; do
+			MAKEPKGOPTS=(-c)
 		    check_package "$REPODIR_REMOTE" "$pkgname" "$pkgver" "$pkgrel" "$cpu" && continue # package already present
 			if [ -f "${PATCHDIR}/${package}.patch" ]; then
 				cp "${PATCHDIR}/${package}.patch" .
@@ -120,23 +146,45 @@ if [[ $MAKEPACKAGES = "true" ]]; then
 		    echo "Building $package for $cpu"
 		    if [[ $cpu = i686 ]]; then
 		        [[ $package = lib32-* ]] && continue
-		        makepkg --sign "${MAKEPKGOPTS[@]}" --config=/etc/makepkg.conf."$cpu" 1>"$LOGFILE-$package-$cpu"-build 2>"$LOGFILE-$package-$cpu"-errors || log "Error building $package; see $LOGFILE-$package-$cpu-errors for details"
+		        if [ $USEAUR = "true" ]; then
+					for dependency in "${depends[@]}" "${makedepends[@]}";
+					do
+						DEPS=$(pacman -Ssq '^'$dependency'$')
+						if [[ "$DEPS" == "" ]]; then
+							cower -d $dependency
+							cd $dependency
+							makechrootpkg $MAKEPKGOPTS -r /chroots/32/
+							makechrootpkg -r /chroots/32 -I ./*.pkg.tar.xz
+							cd ..
+							MAKEPKGOPTS=()
+						fi
+					done
+				fi
+				makechrootpkg $MAKEPKGOPTS -r /chroots/32/ 1>"$LOGFILE-$package-$cpu"-build 2>"$LOGFILE-$package-$cpu"-errors || log "Error building $package; see $LOGFILE-$package-$cpu-errors for details"
 		    else
-		        makepkg --sign "${MAKEPKGOPTS[@]}" --config=/etc/makepkg.conf."$cpu" 1>"$LOGFILE-$package-$cpu"-build 2>"$LOGFILE-$package-$cpu"-errors || log "Error building $package; see $LOGFILE-$package-$cpu-errors for details"
+				if [ $USEAUR = "true" ]; then
+					for dependency in "${depends[@]}" "${makedepends[@]}";
+					do
+						DEPS=$(pacman -Ssq '^'$dependency'$')
+						if [[ "$DEPS" == "" ]]; then
+							cower -d $dependency
+							cd $dependency
+							makechrootpkg $MAKEPKGOPTS -r /chroots/64/
+							makechrootpkg -r /chroots/64 -I ./*.pkg.tar.xz
+							cd ..
+							MAKEPKGOPTS=()
+						fi
+					done
+				fi
+				makechrootpkg $MAKEPKGOPTS -r /chroots/64/ 1>"$LOGFILE-$package-$cpu"-build 2>"$LOGFILE-$package-$cpu"-errors || log "Error building $package; see $LOGFILE-$package-$cpu-errors for details"
 		    fi
-			if [ -f "$package"-[0-9]*-"$cpu".pkg.tar.xz.sig ]; then
-				mv -vf "$package"-[0-9]*-"$cpu".pkg.tar.xz "$REPODIR/$cpu/"
-				mv -vf "$package"-[0-9]*-"$cpu".pkg.tar.xz.sig "$REPODIR/$cpu/"
-			else
-				log "Error signing $package; see $LOGFILE-$package-$cpu-errors for details"
-			fi
+			mv -vf "$package"-[0-9]*-"$cpu".pkg.tar.xz "$REPODIR/$cpu/"
 		done
-		#Remove orphans to prevent contamination of other packages
-		sudo pacman --noconfirm -Rns $(pacman -Qtdq)
 		rm -fr package
 	done
 
 	for package in "${any[@]}" "${extras_any[@]}"; do
+		MAKEPKGOPTS=(-c)
 		echo "$LINE"
 		echo "Entering $package"
 		cd "$BUILDDIR/$package"
@@ -156,16 +204,25 @@ if [[ $MAKEPACKAGES = "true" ]]; then
 		fi
 		echo "Building $package for any"
 		cpu=any
-		makepkg --sign "${MAKEPKGOPTS[@]}" 1>"$LOGFILE-$package-$cpu-build" 2>"$LOGFILE-$package-$cpu-errors" || log "Error building $package; see $LOGFILE-$package-$cpu-errors for details"
+		if [ $USEAUR = "true" ]; then
+			for dependency in "${depends[@]}" "${makedepends[@]}";
+			do
+				DEPS=$(pacman -Ssq '^'$dependency'$')
+				if [[ "$DEPS" == "" ]]; then
+					cower -d $dependency
+					cd $dependency
+					makechrootpkg $MAKEPKGOPTS -r /chroots/64/
+					makechrootpkg -r /chroots/64 -I ./*.pkg.tar.xz
+					cd ..
+					MAKEPKGOPTS=()
+				fi
+			done
+		fi
+		makechrootpkg $MAKEPKGOPTS -r /chroots/64/ 1>"$LOGFILE-$package-$cpu"-build 2>"$LOGFILE-$package-$cpu"-errors || log "Error building $package; see $LOGFILE-$package-$cpu-errors for details"
 		for cpu2 in "${TARGETS[@]}"; do
 			cp -vf ./*-"$cpu".pkg.tar.xz "$REPODIR/$cpu2/"
-			cp -vf ./*-"$cpu".pkg.tar.xz.sig "$REPODIR/$cpu2/"
 		done
 		rm -vf ./*-"$cpu".pkg.tar.xz
-		rm -vf ./*-"$cpu".pkg.tar.xz.sig
-
-		#Remove orphans to prevent contamination of other packages
-		sudo pacman --noconfirm -Rns $(pacman -Qtdq)
 	done
 
 	log "$LINE"
@@ -180,6 +237,10 @@ if [[ $UPLOADFILES = "yes" ]]; then
 		flag=0
 		# add packages to pacman db
 		cd "$REPODIR/$repo"
+		for file in $(find ./ -maxdepth 1 -type f -name '*.pkg.tar.xz');
+		do
+			gpg -b $file
+		done
 		for file in $(find ./ -maxdepth 1 -type f -not -name '*.pkg.tar.xz.sig');
 		do
 			nice -n 20 repo-add --sign "$REPODIR_REMOTE/$repo/$REPO.db.tar.gz" $file

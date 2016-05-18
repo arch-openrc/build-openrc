@@ -5,4 +5,5 @@ arch-openrc-sf/
 arch-openrc/
 packages-nosystemd/
 packages-openrc/
-
+pgpsign
+pgpsign.sig
