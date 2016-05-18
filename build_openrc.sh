@@ -1,6 +1,8 @@
 #!/bin/bash
 # build_openrc.sh
 
+# start the gpg-agent and create the temp source files
+# /tmp/sources should be declared in the /etc/makepkg.conf file for the sources directory
 if [ -f ./pgpsign.sig ]; then
 	rm ./pgpsign.sig
 fi
