@@ -10,8 +10,6 @@ touch ./pgpsign
 gpg -b ./pgpsign
 if [ ! -d /tmp/sources ]; then
 	mkdir /tmp/sources
-else
-	rm /tmp/sources/*
 fi
 
 # Source repo packages and functions
@@ -155,14 +153,16 @@ if [[ $MAKEPACKAGES = "true" ]]; then
 						if [[ "$DEPS" == "" ]]; then
 							cower -d $dependency
 							cd $dependency
-							makechrootpkg $MAKEPKGOPTS -r /chroots/32/
-							makechrootpkg -r /chroots/32 -I ./*.pkg.tar.xz
+							makechrootpkg $MAKEPKGOPTS -r /chroots/32/ 1>>"$LOGFILE-$package-$cpu"-build 2>>"$LOGFILE-$package-$cpu"-errors || log "Error building $dependency; see $LOGFILE-$package-$cpu-errors for details"
+							makechrootpkg -r /chroots/32 -I ./*.pkg.tar.xz 1>>"$LOGFILE-$package-$cpu"-build 2>>"$LOGFILE-$package-$cpu"-errors || log "Error building $dependency; see $LOGFILE-$package-$cpu-errors for details"
 							cd ..
 							MAKEPKGOPTS=()
 						fi
 					done
 				fi
-				makechrootpkg $MAKEPKGOPTS -r /chroots/32/ 1>"$LOGFILE-$package-$cpu"-build 2>"$LOGFILE-$package-$cpu"-errors || log "Error building $package; see $LOGFILE-$package-$cpu-errors for details"
+				makechrootpkg $MAKEPKGOPTS -r /chroots/32/ 1>>"$LOGFILE-$package-$cpu"-build 2>>"$LOGFILE-$package-$cpu"-errors || log "Error building $package; see $LOGFILE-$package-$cpu-errors for details"
+				cp -vf ./*-"$cpu".pkg.tar.xz "$REPODIR/$cpu/"
+				rm -vf ./*-"$cpu".pkg.tar.xz
 		    else
 				if [ $USEAUR = "true" ]; then
 					for dependency in "${depends[@]}" "${makedepends[@]}";
@@ -171,16 +171,17 @@ if [[ $MAKEPACKAGES = "true" ]]; then
 						if [[ "$DEPS" == "" ]]; then
 							cower -d $dependency
 							cd $dependency
-							makechrootpkg $MAKEPKGOPTS -r /chroots/64/
-							makechrootpkg -r /chroots/64 -I ./*.pkg.tar.xz
+							makechrootpkg $MAKEPKGOPTS -r /chroots/64/ 1>>"$LOGFILE-$package-$cpu"-build 2>>"$LOGFILE-$package-$cpu"-errors || log "Error building $dependency; see $LOGFILE-$package-$cpu-errors for details"
+							makechrootpkg -r /chroots/64 -I ./*.pkg.tar.xz 1>>"$LOGFILE-$package-$cpu"-build 2>>"$LOGFILE-$package-$cpu"-errors || log "Error building $dependency; see $LOGFILE-$package-$cpu-errors for details"
 							cd ..
 							MAKEPKGOPTS=()
 						fi
 					done
 				fi
-				makechrootpkg $MAKEPKGOPTS -r /chroots/64/ 1>"$LOGFILE-$package-$cpu"-build 2>"$LOGFILE-$package-$cpu"-errors || log "Error building $package; see $LOGFILE-$package-$cpu-errors for details"
+				makechrootpkg $MAKEPKGOPTS -r /chroots/64/ 1>>"$LOGFILE-$package-$cpu"-build 2>>"$LOGFILE-$package-$cpu"-errors || log "Error building $package; see $LOGFILE-$package-$cpu-errors for details"
+				cp -vf ./*-"$cpu".pkg.tar.xz "$REPODIR/$cpu/"
+				rm -vf ./*-"$cpu".pkg.tar.xz
 		    fi
-			mv -vf "$package"-[0-9]*-"$cpu".pkg.tar.xz "$REPODIR/$cpu/"
 		done
 		rm -fr package
 	done
@@ -211,14 +212,14 @@ if [[ $MAKEPACKAGES = "true" ]]; then
 				if [[ "$DEPS" == "" ]]; then
 					cower -d $dependency
 					cd $dependency
-					makechrootpkg $MAKEPKGOPTS -r /chroots/64/
-					makechrootpkg -r /chroots/64 -I ./*.pkg.tar.xz
+					makechrootpkg $MAKEPKGOPTS -r /chroots/64/ 1>>"$LOGFILE-$package-$cpu"-build 2>>"$LOGFILE-$package-$cpu"-errors || log "Error building $dependency; see $LOGFILE-$package-$cpu-errors for details"
+					makechrootpkg -r /chroots/64 -I ./*.pkg.tar.xz 1>>"$LOGFILE-$package-$cpu"-build 2>>"$LOGFILE-$package-$cpu"-errors || log "Error building $dependency; see $LOGFILE-$package-$cpu-errors for details"
 					cd ..
 					MAKEPKGOPTS=()
 				fi
 			done
 		fi
-		makechrootpkg $MAKEPKGOPTS -r /chroots/64/ 1>"$LOGFILE-$package-$cpu"-build 2>"$LOGFILE-$package-$cpu"-errors || log "Error building $package; see $LOGFILE-$package-$cpu-errors for details"
+		makechrootpkg $MAKEPKGOPTS -r /chroots/64/ 1>>"$LOGFILE-$package-$cpu"-build 2>>"$LOGFILE-$package-$cpu"-errors || log "Error building $package; see $LOGFILE-$package-$cpu-errors for details"
 		for cpu2 in "${TARGETS[@]}"; do
 			cp -vf ./*-"$cpu".pkg.tar.xz "$REPODIR/$cpu2/"
 		done

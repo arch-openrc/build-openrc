@@ -1,3 +1,0 @@
-gcc-multilib
-makepkg.conf.cpu (with -m32 in LDFLAGS, CFLAGS and CXXFLAGS)
-rsync access to archopenrc sourceforge repo
