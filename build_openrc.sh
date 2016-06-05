@@ -78,11 +78,6 @@ if [[ $MAKEPACKAGES = "true" ]]; then
 		arch-nspawn /chroots/32/root pacman -Syu
 		arch-nspawn /chroots/64/root pacman -Syu
 	fi
-	read -p "Do you want to remove orphans from the chroots? (yes/no): " CHROOTOP
-	if [ "$CHROOTOP" = "yes" ]; then
-		arch-nspawn /chroots/32/root pacman -Rns $(pacman -Qtdq)
-		arch-nspawn /chroots/64/root pacman -Rns $(pacman -Qtdq)
-	fi
 	read -p "Do you want to remove old cached packages from the chroots? (yes/no): " CHROOTOP
 	if [ "$CHROOTOP" = "yes" ]; then
 		arch-nspawn /chroots/32/root pacman -Sc
