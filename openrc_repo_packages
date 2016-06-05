@@ -14,6 +14,7 @@ arches=(sysvinit
 	bumblebee-openrc
 	lib32-eudev)
 any=(openrc-base
+	openrc-keyring
 	openrc-desktop
 	openrc-devel
 	openrc-misc

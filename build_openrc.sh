@@ -111,6 +111,18 @@ if [[ $MAKEPACKAGES = "true" ]]; then
 		log "Can't find sources. Aborting"
 		exit 1
 	fi
+	
+	if [ -d "$BUILDDIR/openrc-keyring" ]; then
+		cd "$BUILDDIR/openrc-keyring"
+		git fetch origin
+		git reset --hard origin/master
+		git clean -fd
+		git pull http://github.com/cromerc/openrc-keyring.git
+	else
+		cd "$BUILDDIR"
+		git clone http://github.com/cromerc/openrc-keyring.git
+	fi
+	cd "$BUILDDIR"
 
 	rm -f $REPODIR/*/*pkg.tar.xz
 	rm -f $REPODIR/*/*pkg.tar.xz.sig
