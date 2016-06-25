@@ -1,9 +1,9 @@
 *~
-arch-nosystemd-sf/
+arch-nosystemd-repo-sourceforge/
+arch-nosystemd-repo/
+arch-openrc-repo-sourceforge/
+arch-openrc-repo/
 arch-nosystemd/
-arch-openrc-sf/
 arch-openrc/
-packages-nosystemd/
-packages-openrc/
 pgpsign
 pgpsign.sig

@@ -15,6 +15,7 @@ arches=(sysvinit
 	lib32-eudev)
 any=(openrc-base
 	openrc-keyring
+	openrc-mirrorlist
 	openrc-desktop
 	openrc-devel
 	openrc-misc
@@ -35,7 +36,7 @@ extras_any=(motion-openrc
 	desktop-privileges    
     modemmanager-openrc
     #gogs-openrc
-    docker-openrc-git
+    #docker-openrc-git
     dictd-openrc
 	apparmor-openrc
     auditd-openrc)

@@ -28,12 +28,12 @@ fi
 # Set the variables
 TARGETS=('x86_64' 'i686')
 BASEDIR=$PWD
-BUILDDIR=$BASEDIR/packages-nosystemd
+BUILDDIR=$BASEDIR/arch-nosystemd
 LOGDIR=/tmp/nosystemd-autobuild-$(date +%F_%T)
 LOGFILE=$LOGDIR/log
-REPO=arch-nosystemd
+REPO=arch-nosystemd-repo
 REPODIR=$BASEDIR/$REPO
-REPO_REMOTE=$REPO-sf
+REPO_REMOTE=$REPO-sourceforge
 if [[ $sfname = archnous ]]; then
 	REPODIR_REMOTE=$BASEDIR/$REPO_REMOTE
 elif [[ $sfname = agisci ]]; then
@@ -51,7 +51,7 @@ MAKEPACKAGES="true"
 MAKEPKGOPTS=(-c)
 LINE="=================================================================== "
 SFREPO="frs.sourceforge.net:/home/frs/project/archopenrc/arch-nosystemd/"
-GHREPO="https://github.com/cromerc/packages-nosystemd"
+GHREPO="https://github.com/cromerc/arch-nosystemd"
 PATCHDIR="$PWD/nosystemd_patches"
 
 # Parse commandline args
