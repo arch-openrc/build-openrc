@@ -34,6 +34,7 @@ LOGFILE=$LOGDIR/log
 REPO=arch-nosystemd-repo
 REPODIR=$BASEDIR/$REPO
 REPO_REMOTE=$REPO-sourceforge
+REPO_FILE=arch-nosystemd
 if [[ $sfname = archnous ]]; then
 	REPODIR_REMOTE=$BASEDIR/$REPO_REMOTE
 elif [[ $sfname = agisci ]]; then
@@ -42,7 +43,7 @@ else
 	REPODIR_REMOTE=$HOME/$REPO_REMOTE
 fi
 if [[ $sfname = agisci ]]; then
-	AURDOWNLOAD="cower -d --ignorerepo=arch-nosystemd"
+	AURDOWNLOAD="cower -f -d --ignorerepo=arch-nosystemd"
 else
 	AURDOWNLOAD="yaourt -G"
 fi
@@ -146,7 +147,7 @@ if [[ $MAKEPACKAGES = "true" ]]; then
 					do
 						DEPS=$(pacman -Ssq '^'$dependency'$')
 						if [[ "$DEPS" == "" ]]; then
-							cower -d $dependency
+							cower -f -d $dependency
 							cd $dependency
 							makechrootpkg $MAKEPKGOPTS -r /chroots/32/ 1>>"$LOGFILE-$package-$cpu"-build 2>>"$LOGFILE-$package-$cpu"-errors || log "Error building $dependency; see $LOGFILE-$package-$cpu-errors for details"
 							makechrootpkg -r /chroots/32 -I ./*.pkg.tar.xz 1>>"$LOGFILE-$package-$cpu"-build 2>>"$LOGFILE-$package-$cpu"-errors || log "Error building $dependency; see $LOGFILE-$package-$cpu-errors for details"
@@ -164,7 +165,7 @@ if [[ $MAKEPACKAGES = "true" ]]; then
 					do
 						DEPS=$(pacman -Ssq '^'$dependency'$')
 						if [[ "$DEPS" == "" ]]; then
-							cower -d $dependency
+							cower -f -d $dependency
 							cd $dependency
 							makechrootpkg $MAKEPKGOPTS -r /chroots/64/ 1>>"$LOGFILE-$package-$cpu"-build 2>>"$LOGFILE-$package-$cpu"-errors || log "Error building $dependency; see $LOGFILE-$package-$cpu-errors for details"
 							makechrootpkg -r /chroots/64 -I ./*.pkg.tar.xz 1>>"$LOGFILE-$package-$cpu"-build 2>>"$LOGFILE-$package-$cpu"-errors || log "Error building $dependency; see $LOGFILE-$package-$cpu-errors for details"
@@ -239,13 +240,13 @@ if [[ $UPLOADFILES = "yes" ]]; then
 		done
 		for file in $(find ./ -maxdepth 1 -type f -not -name '*.pkg.tar.xz.sig');
 		do
-			nice -n 20 repo-add --sign "$REPODIR_REMOTE/$repo/$REPO.db.tar.gz" $file
+			nice -n 20 repo-add --sign "$REPODIR_REMOTE/$repo/$REPOFILE.db.tar.gz" $file
 		done
 		mv -vf "$REPODIR/$repo"/*.pkg.tar.xz "$REPODIR_REMOTE/$repo/" || flag=1  # repo state unchanged, nothing to do
 		mv -vf "$REPODIR/$repo"/*.pkg.tar.xz.sig "$REPODIR_REMOTE/$repo/" || flag=1  # repo state unchanged, nothing to do
 		if [[ $flag -eq 1 ]]; then
 		    echo "Nothing to do"
-		    continue
+		    #continue
 		fi
 		cd "$REPODIR_REMOTE/$repo"
 		# remove old versions

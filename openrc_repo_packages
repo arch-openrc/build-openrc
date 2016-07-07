@@ -12,6 +12,7 @@ arches=(sysvinit
 	light-locker-consolekit
 	elogind
 	bumblebee-openrc
+	docker-openrc-git
 	lib32-eudev)
 any=(openrc-base
 	openrc-keyring
@@ -36,7 +37,6 @@ extras_any=(motion-openrc
 	desktop-privileges    
     modemmanager-openrc
     #gogs-openrc
-    #docker-openrc-git
     dictd-openrc
 	apparmor-openrc
     auditd-openrc)
