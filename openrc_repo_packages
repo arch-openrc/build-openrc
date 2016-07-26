@@ -26,6 +26,7 @@ any=(openrc-base
 	cronjobs
 	modemmanager-pk-rules
 	freefall-openrc
+	teamviewer-openrc
 	udev-openrc)
 # AUR packages
 extras=(

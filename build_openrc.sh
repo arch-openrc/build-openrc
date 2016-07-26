@@ -34,7 +34,7 @@ LOGFILE=$LOGDIR/log
 REPO=arch-openrc-repo
 REPODIR=$BASEDIR/$REPO
 REPO_REMOTE=$REPO-sourceforge
-REPOFILE=arch-openrc
+REPO_FILE=arch-openrc
 if [[ $sfname = archnous ]]; then
 	REPODIR_REMOTE=$BASEDIR/$REPO_REMOTE
 elif [[ $sfname = agisci ]]; then
@@ -254,7 +254,7 @@ if [[ $UPLOADFILES = "yes" ]]; then
 		done
 		for file in $(find ./ -maxdepth 1 -type f -not -name '*.pkg.tar.xz.sig');
 		do
-			nice -n 20 repo-add --sign "$REPODIR_REMOTE/$repo/$REPOFILE.db.tar.gz" $file
+			nice -n 20 repo-add --sign "$REPODIR_REMOTE/$repo/$REPO_FILE.db.tar.gz" $file
 		done
 		mv -vf "$REPODIR/$repo"/*.pkg.tar.xz "$REPODIR_REMOTE/$repo/" || flag=1  # repo state unchanged, nothing to do
 		mv -vf "$REPODIR/$repo"/*.pkg.tar.xz.sig "$REPODIR_REMOTE/$repo/" || flag=1  # repo state unchanged, nothing to do
