@@ -27,6 +27,7 @@ any=(openrc-base
 	modemmanager-pk-rules
 	freefall-openrc
 	teamviewer-openrc
+	firewalld-openrc
 	udev-openrc)
 # AUR packages
 extras=(
