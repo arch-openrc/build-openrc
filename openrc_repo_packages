@@ -1,6 +1,7 @@
 # Repo packages
 arches=(sysvinit
 	openrc
+	dbus-openrc
 	netifrc
 	polkit-consolekit
 	consolekit
@@ -15,6 +16,7 @@ arches=(sysvinit
 	docker-openrc-git
 	lib32-eudev)
 any=(openrc-base
+	openrc-accessible
 	openrc-keyring
 	openrc-mirrorlist
 	openrc-desktop

@@ -14,8 +14,7 @@ arches=(avahi-nosystemd
 	xdg-user-dirs-nosystemd
 	xorg-server-nosystemd
 	plymouth-nosystemd)
-any=(nosystemd-repo
-	mkinitcpio-nosystemd)
+any=(mkinitcpio-nosystemd)
 # AUR packages
 extras=()
 extras_any=()
