@@ -35,7 +35,6 @@ any=(openrc-base
 extras=(
 	mate-session-manager-upower
 	mate-power-manager-upower
-	upower-pm-utils
 	lxdm-consolekit)
 extras_any=(motion-openrc
 	desktop-privileges    
