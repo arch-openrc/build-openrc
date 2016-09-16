@@ -22,7 +22,7 @@ check_package() {
     oldpkgrel=$(echo "$oldpkg" | rev | cut -f 2 -d "-" | rev)
     oldpkgver=$(echo "$oldpkg" | rev | cut -f 3 -d "-" | rev)
     if [[ -n $service ]]; then
-        if [[ $pkgver -le $oldpkgver ]]; then
+        if [[ $pkgver -le $oldpkgver ]] && [[ $pkgrel = "$oldpkgrel" ]]; then
             echo "Package $pkgnam newer or equal in version (${oldpkgver}, ${pkgver}), not building."
             return 0
         fi

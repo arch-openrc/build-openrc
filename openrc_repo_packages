@@ -1,7 +1,6 @@
 # Repo packages
 arches=(sysvinit
 	openrc
-	dbus-openrc
 	netifrc
 	polkit-consolekit
 	consolekit

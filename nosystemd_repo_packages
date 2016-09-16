@@ -2,7 +2,6 @@
 arches=(avahi-nosystemd
 	cups-nosystemd
 	dbus-nosystemd
-	dbus-x11-nosystemd
 	gvfs-nosystemd
 	libpulse-nosystemd
 	logrotate-nosystemd
