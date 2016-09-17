@@ -52,7 +52,7 @@ MAKEPACKAGES="true"
 MAKEPKGOPTS=(-c)
 LINE="=================================================================== "
 SFREPO="frs.sourceforge.net:/home/frs/project/archopenrc/arch-nosystemd/"
-GHREPO="https://github.com/cromerc/arch-nosystemd"
+GHREPO="https://github.com/arch-openrc/arch-nosystemd"
 PATCHDIR="$PWD/nosystemd_patches"
 
 # Parse commandline args

@@ -52,7 +52,7 @@ MAKEPACKAGES="true"
 MAKEPKGOPTS=(-c)
 LINE="=================================================================== "
 SFREPO="frs.sourceforge.net:/home/frs/project/archopenrc/arch-openrc/"
-GHREPO="https://github.com/cromerc/arch-openrc"
+GHREPO="https://github.com/arch-openrc/arch-openrc"
 PATCHDIR="$PWD/openrc_patches"
 
 # Parse commandline args
@@ -107,16 +107,16 @@ if [[ $MAKEPACKAGES = "true" ]]; then
 		log "Can't find sources. Aborting"
 		exit 1
 	fi
-	
+
 	if [ -d "$BUILDDIR/openrc-keyring" ]; then
 		cd "$BUILDDIR/openrc-keyring"
 		git fetch origin
 		git reset --hard origin/master
 		git clean -fd
-		git pull http://github.com/cromerc/openrc-keyring.git
+		git pull http://github.com/arch-openrc/openrc-keyring.git
 	else
 		cd "$BUILDDIR"
-		git clone http://github.com/cromerc/openrc-keyring.git
+		git clone http://github.com/arch-openrc/openrc-keyring.git
 	fi
 	cd "$BUILDDIR"
 
