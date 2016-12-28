@@ -32,7 +32,8 @@ any=(openrc-base
 	udev-openrc
 	smartd-openrc
 	fail2ban-openrc
-	nut-openrc)
+	nut-openrc
+	deluge-openrc)
 # AUR packages
 extras=(
 	mate-session-manager-upower
