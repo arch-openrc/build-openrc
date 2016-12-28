@@ -29,14 +29,17 @@ any=(openrc-base
 	freefall-openrc
 	teamviewer-openrc
 	firewalld-openrc
-	udev-openrc)
+	udev-openrc
+	smartd-openrc
+	fail2ban-openrc
+	nut-openrc)
 # AUR packages
 extras=(
 	mate-session-manager-upower
 	mate-power-manager-upower
 	lxdm-consolekit)
 extras_any=(motion-openrc
-	desktop-privileges    
+	desktop-privileges
     modemmanager-openrc
     #gogs-openrc
     dictd-openrc
