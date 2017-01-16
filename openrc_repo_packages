@@ -13,7 +13,8 @@ arches=(sysvinit
 	elogind
 	bumblebee-openrc
 	docker-openrc-git
-	lib32-eudev)
+	lib32-eudev
+	lib32-eudev-systemd)
 any=(openrc-base
 	openrc-accessible
 	openrc-keyring
