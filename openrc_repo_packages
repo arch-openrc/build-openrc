@@ -25,6 +25,7 @@ any=(openrc-base
 	openrc-net
 	openrc-video
 	openrc-repo
+	openresolv-openrc
 	cronjobs
 	modemmanager-pk-rules
 	freefall-openrc
