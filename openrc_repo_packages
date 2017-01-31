@@ -7,7 +7,6 @@ arches=(sysvinit
 	eudev
 	eudev-systemdcompat
 	networkmanager-consolekit
-	networkmanager-consolekit-noscan
 	sddm-consolekit
 	light-locker-consolekit
 	elogind
