@@ -13,7 +13,8 @@ arches=(sysvinit
 	bumblebee-openrc
 	docker-openrc-git
 	lib32-eudev
-	lib32-eudev-systemd)
+	lib32-eudev-systemd
+	pm-utils)
 any=(openrc-base
 	openrc-accessible
 	openrc-keyring
@@ -34,7 +35,8 @@ any=(openrc-base
 	smartd-openrc
 	fail2ban-openrc
 	nut-openrc
-	deluge-openrc)
+	deluge-openrc
+	opentmpfiles)
 # AUR packages
 extras=(
 	mate-session-manager-upower
