@@ -75,17 +75,15 @@ if [[ $MAKEPACKAGES = "true" ]]; then
 	CHROOTOP="no"
 	read -p "Do you want to update the chroots? (yes/no): " CHROOTOP
 	if [ "$CHROOTOP" = "yes" ]; then
-		arch-nspawn /chroots/32/root pacman -Syu
 		arch-nspawn /chroots/64/root pacman -Syu
 	fi
 	read -p "Do you want to remove old cached packages from the chroots? (yes/no): " CHROOTOP
 	if [ "$CHROOTOP" = "yes" ]; then
-		arch-nspawn /chroots/32/root pacman -Sc
 		arch-nspawn /chroots/64/root pacman -Sc
 	fi
 
 	# Building process starts
-	mkdir -p $REPODIR/{i686,x86_64}
+	mkdir -p $REPODIR/x86_64
 
 	log "$LINE"
 	log "Building for CPU(s): ${TARGETS[*]}"
@@ -139,44 +137,23 @@ if [[ $MAKEPACKAGES = "true" ]]; then
 				patch < ${package}.patch
 			fi
 		    echo "Building $package for $cpu"
-		    if [[ $cpu = i686 ]]; then
-		        [[ $package = lib32-* ]] && continue
-		        if [ $USEAUR = "true" ]; then
-					for dependency in "${depends[@]}" "${makedepends[@]}";
-					do
-						DEPS=$(pacman -Ssq '^'$dependency'$')
-						if [[ "$DEPS" == "" ]]; then
-							cower -f -d $dependency
-							cd $dependency
-							makechrootpkg $MAKEPKGOPTS -r /chroots/32/ 1>>"$LOGFILE-$package-$cpu"-build 2>>"$LOGFILE-$package-$cpu"-errors || log "Error building $dependency; see $LOGFILE-$package-$cpu-errors for details"
-							makechrootpkg -r /chroots/32 -I ./*.pkg.tar.xz 1>>"$LOGFILE-$package-$cpu"-build 2>>"$LOGFILE-$package-$cpu"-errors || log "Error building $dependency; see $LOGFILE-$package-$cpu-errors for details"
-							cd ..
-							MAKEPKGOPTS=()
-						fi
-					done
-				fi
-				makechrootpkg $MAKEPKGOPTS -r /chroots/32/ 1>>"$LOGFILE-$package-$cpu"-build 2>>"$LOGFILE-$package-$cpu"-errors || log "Error building $package; see $LOGFILE-$package-$cpu-errors for details"
-				cp -vf ./*-"$cpu".pkg.tar.xz "$REPODIR/$cpu/"
-				rm -vf ./*-"$cpu".pkg.tar.xz
-		    else
-				if [ $USEAUR = "true" ]; then
-					for dependency in "${depends[@]}" "${makedepends[@]}";
-					do
-						DEPS=$(pacman -Ssq '^'$dependency'$')
-						if [[ "$DEPS" == "" ]]; then
-							cower -f -d $dependency
-							cd $dependency
-							makechrootpkg $MAKEPKGOPTS -r /chroots/64/ 1>>"$LOGFILE-$package-$cpu"-build 2>>"$LOGFILE-$package-$cpu"-errors || log "Error building $dependency; see $LOGFILE-$package-$cpu-errors for details"
-							makechrootpkg -r /chroots/64 -I ./*.pkg.tar.xz 1>>"$LOGFILE-$package-$cpu"-build 2>>"$LOGFILE-$package-$cpu"-errors || log "Error building $dependency; see $LOGFILE-$package-$cpu-errors for details"
-							cd ..
-							MAKEPKGOPTS=()
-						fi
-					done
-				fi
-				makechrootpkg $MAKEPKGOPTS -r /chroots/64/ 1>>"$LOGFILE-$package-$cpu"-build 2>>"$LOGFILE-$package-$cpu"-errors || log "Error building $package; see $LOGFILE-$package-$cpu-errors for details"
-				cp -vf ./*-"$cpu".pkg.tar.xz "$REPODIR/$cpu/"
-				rm -vf ./*-"$cpu".pkg.tar.xz
-		    fi
+			if [ $USEAUR = "true" ]; then
+				for dependency in "${depends[@]}" "${makedepends[@]}";
+				do
+					DEPS=$(pacman -Ssq '^'$dependency'$')
+					if [[ "$DEPS" == "" ]]; then
+						cower -f -d $dependency
+						cd $dependency
+						makechrootpkg $MAKEPKGOPTS -r /chroots/64/ 1>>"$LOGFILE-$package-$cpu"-build 2>>"$LOGFILE-$package-$cpu"-errors || log "Error building $dependency; see $LOGFILE-$package-$cpu-errors for details"
+						makechrootpkg -r /chroots/64 -I ./*.pkg.tar.xz 1>>"$LOGFILE-$package-$cpu"-build 2>>"$LOGFILE-$package-$cpu"-errors || log "Error building $dependency; see $LOGFILE-$package-$cpu-errors for details"
+						cd ..
+						MAKEPKGOPTS=()
+					fi
+				done
+			fi
+			makechrootpkg $MAKEPKGOPTS -r /chroots/64/ 1>>"$LOGFILE-$package-$cpu"-build 2>>"$LOGFILE-$package-$cpu"-errors || log "Error building $package; see $LOGFILE-$package-$cpu-errors for details"
+			cp -vf ./*-"$cpu".pkg.tar.xz "$REPODIR/$cpu/"
+			rm -vf ./*-"$cpu".pkg.tar.xz
 		done
 		rm -fr package
 	done
