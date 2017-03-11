@@ -9,10 +9,5 @@ for repo in "${REPOS[@]}"; do
 	for file in $(find ./ -maxdepth 1 -type f -name '*.pkg.tar.xz'); do
 		repo-add --sign ${repo}.db.tar.gz $file
 	done
-	cd ../i686
-	rm ${repo}.*
-	for file in $(find ./ -maxdepth 1 -type f -name '*.pkg.tar.xz'); do
-		repo-add --sign ${repo}.db.tar.gz $file
-	done
 	cd ../..
 done

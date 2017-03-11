@@ -26,7 +26,7 @@ else
 fi
 
 # Set the variables
-TARGETS=('x86_64' 'i686')
+TARGETS=('x86_64')
 BASEDIR=$PWD
 BUILDDIR=$BASEDIR/arch-nosystemd
 LOGDIR=/tmp/nosystemd-autobuild-$(date +%F_%T)
@@ -56,7 +56,6 @@ GHREPO="https://github.com/arch-openrc/arch-nosystemd"
 PATCHDIR="$PWD/nosystemd_patches"
 
 # Parse commandline args
-[[ $@ = *i686* ]] && TARGETS=('i686')
 [[ $@ = *x86_64* ]] && TARGETS=('x86_64')
 [[ $@ = *aur* ]] && USEAUR="true"
 if [[ $@ = *upload* ]]; then
