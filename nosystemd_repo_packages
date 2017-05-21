@@ -11,8 +11,11 @@ arches=(avahi-nosystemd
 	udisks2-nosystemd
 	util-linux-nosystemd
 	xdg-user-dirs-nosystemd
+	libgudev-nosystemd
+	libusb-nosystemd
 	xorg-server-nosystemd
-	plymouth-nosystemd)
+	plymouth-nosystemd
+	upower-nosystemd)
 any=(mkinitcpio-nosystemd)
 # AUR packages
 extras=()
