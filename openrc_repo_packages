@@ -18,6 +18,7 @@ arches=(sysvinit
 any=(openrc-base
 	openrc-accessible
 	openrc-keyring
+	archiso-openrc
 	openrc-mirrorlist
 	openrc-desktop
 	openrc-devel
