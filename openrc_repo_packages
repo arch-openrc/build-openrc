@@ -37,7 +37,8 @@ any=(openrc-base
 	fail2ban-openrc
 	nut-openrc
 	deluge-openrc
-	opentmpfiles)
+	opentmpfiles
+	opensysusers)
 # AUR packages
 extras=(
 	mate-session-manager-upower
